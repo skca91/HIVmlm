@@ -1,4 +1,9 @@
-
+#' Archivo Servidor
+#' 
+#' @description 
+#' Archivo donde se realiza el calculo, graficos y mapa de la aplicacion
+#' @author Stephanie Correa
+#' 
 server <- function(input, output) {
   
   #---------------------Reactivos
@@ -21,23 +26,23 @@ server <- function(input, output) {
   }, ignoreNULL = FALSE)
   datosVInput <- eventReactive(input$DatosV,{
     switch(input$DatosV,
-           "CVP" = CVP,
-           "CD4" = CD4,
-           "CD8" = CD8)
+           "Carga viral plasmatica" = dato()$CVP,
+           "Celulas CD4" = dato()$CD4,
+           "Celulas CD8" = dato()$CD8)
   }, ignoreNULL = FALSE)
   
   selectajusteInput <- eventReactive(input$selectajuste,{
     switch(input$selectajuste,
-           "CVP" = CVP,
-           "CD4" = CD4,
-           "CD8" = CD8)
+           "Carga viral plasmatica" = dato()$CVP,
+           "Celulas CD4" = dato()$CD4,
+           "Celulas CD8" = dato()$CD8)
   }, ignoreNULL = FALSE)
   
   selectcargaInput <- eventReactive(input$selectcarga,{
     switch(input$selectcarga,
-           "CVP" = CVP,
-           "CD4" = CD4,
-           "CD8" = CD8)
+           "Carga viral plasmatica" = dato()$CVP,
+           "Celulas CD4" = dato()$CD4,
+           "Celulas CD8" = dato()$CD8)
   }, ignoreNULL = FALSE)
   
   dato <-reactive({
@@ -45,15 +50,13 @@ server <- function(input, output) {
     
     if(is.null(file1)){return()}
     
-    dat <- read.table(file = file1$datapath, sep = ",", header = TRUE)
+    dat <- read.table(file1$datapath, sep = ",", header = TRUE)
     
   })
   #--------------------------Carga de archivos
   output$filedf <- renderTable({
     if(is.null(dato())){return()}
-    file1<-input$file
-    x <- paste(file1$name, collapse = ".")
-    x
+    input$file
     
   })
   output$info <- renderDataTable({
@@ -126,7 +129,7 @@ server <- function(input, output) {
                            sidebarLayout(
                              sidebarPanel(
                                
-                               selectInput("selectcarga","Seleccione las Variables",choices = c("CVP","CD4","CD8"),selected = CVP)
+                               selectInput("selectcarga","Seleccione las Variables",choices = c("Carga viral plasmatica","Celulas CD4","Celulas CD8"))
                                
                              ),
                              mainPanel(
@@ -138,14 +141,14 @@ server <- function(input, output) {
     
   })
   output$piechart <- renderPlotly({
-    idx <- with(dat, Peri == entradasInput() & is.na(dat$CVP)==FALSE)
-    tre <-dat[idx,]
+    idx <- with(dato(), Peri == entradasInput() & is.na(CVP)==FALSE)
+    tre <-dato()[idx,]
     sexo <- c(tre[,5])
     tiposex <- rep(NA,length(sexo))
     tiposex[sexo==0] <-'Masculino'
     tiposex[sexo==1] <-'Femenino'
     frec.tipo.sex <- table(tiposex)
-    plot_ly(dat, values = ~frec.tipo.sex, type = 'pie',
+    plot_ly(tre, values = ~frec.tipo.sex, type = 'pie',
             textposition = 'inside',
             textinfo = 'percent',
             insidetextfont = list(color = '#FFFFFF'),
@@ -158,10 +161,12 @@ server <- function(input, output) {
              xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
              yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
     
+    
+    
   })
   output$histogram <- renderPlotly({
-    idx <- with(dat, is.na(dat$CVP)==FALSE)
-    tre <-dat[idx,]
+    idx <- with(dato(), is.na(CVP)==FALSE)
+    tre <-dato()[idx,]
     plot_ly(alpha = 0.6) %>%
       add_histogram(x = ~tre$Edad)%>%
       layout(barmode = "overlay")%>%
@@ -173,10 +178,8 @@ server <- function(input, output) {
   
   output$line <- renderPlotly({
     
-    #plot(as.character.Date(Peri),selectcargaInput() ,type="o",group=Pac,xlab="Fecha",ylab="Variable",main="Comportamiento del conteo por periodo")
-    idx <- with(dat, is.na(dat$CVP)==FALSE)
-    tre <-dat[idx,]
-    plot_ly(tre, x = ~as.character.Date(tre$Peri), y = tre$CVP, type="scatter", text = paste("Paciente: ", tre$Pac,"</br>Genero: ",tre$Sex),
+    variable <- selectcargaInput()
+    plot_ly(dato(), x = ~as.character.Date(Peri), y = ~variable, type="scatter", text = paste("Paciente: ", dato()$Pac,"</br>Genero: ",dato()$Sex),
             mode = "markers", colors = "Set1")%>%
       layout(title = 'Comportamiento del conteo por semestre',
              yaxis = list(zeroline = FALSE,title="Variable"),
@@ -197,7 +200,7 @@ server <- function(input, output) {
         sidebarPanel(
           "Modelo de Intercepto Aleatorio con Media Fija",
           tags$hr(),
-          selectInput("selectajuste","Seleccione las Variables",choices = c("CVP","CD4","CD8"),selected = CVP),
+          selectInput("selectajuste","Seleccione las Variables",choices = c("Carga viral plasmatica","Celulas CD4","Celulas CD8")),
           checkboxInput("REML", "Restringida", TRUE)
         ),
         mainPanel(
@@ -210,12 +213,10 @@ server <- function(input, output) {
   })  
   
   output$sum <- renderPrint({
-    idx <- with(dat, is.na(dat$CVP)==FALSE)
-    tre <-dat[idx,]
-    variable <- selectajusteInput() 
-    
-    M0 <- lmer(LogCVP ~ 1 + Fecha + variable + (1|Pac), tre, REML = input$REML)
-    summary(M0)
+     
+     variable <-  selectajusteInput() 
+     M0 <- lmer(LogCVP ~ 1 + Fecha +  variable + (1|Pac), data = dato(), REML = input$REML)
+     summary(M0)
   })
   
   #-------------------------------Validacion de los datos
@@ -226,7 +227,7 @@ server <- function(input, output) {
     else{
       sidebarLayout(
         sidebarPanel(
-          selectInput("DatosV","Seleccione las variables:",choices = c("CVP","CD4","CD8"),selected = CVP)
+          selectInput("DatosV","Seleccione las variables:",choices = c("Carga viral plasmatica","Celulas CD4","Celulas CD8"))
         ),
         mainPanel(
           plotOutput("valido")
@@ -236,7 +237,7 @@ server <- function(input, output) {
   })
   output$valido <- renderPlot({
     variable <- datosVInput()
-    M1RML <- lmer(variable ~ 1 + Fecha  + Edad + EI + (Fecha|Pac), dato(), REML = FALSE) 
+    M1RML <- lmer(variable ~ 1 + Fecha  + Edad + EI + (Fecha|Pac), data = dato(), REML = FALSE) 
     qqmath (M1RML,id =0.05)
     
     

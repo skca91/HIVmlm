@@ -1,10 +1,15 @@
-
+#' Archivo Interfaz Grafica
+#' 
+#' @description 
+#' Archivo de la interfaz grafica donde permite definir la estructura grafica de la aplicacion
+#' @author Stephanie Correa
+#' 
 ui <- fluidPage(
   
   # App title ----
   titlePanel("UNET"),
   fluidRow(
-    navbarPage(img(src = "logo_unet.png", height = 30, width = 30),
+    navbarPage(img("UNET"),
                tabPanel("Carga de Datos",
                         column(4,
                                fileInput("file", label = h3("Carga de Archivo")),
