@@ -2,11 +2,20 @@
 #' 
 #' @description 
 #' Archivo donde se realiza el calculo, graficos y mapa de la aplicacion
+#' @param input todas las entradas de la aplicacion
+#' @param output todas las salidas de la aplicacion
 #' @author Stephanie Correa
 #' 
 server <- function(input, output) {
   
   #---------------------Reactivos
+  
+  #' Dato reactivo \code{entradasInput} 
+  #' Permite crear un evento reactivo con el periodo que el usuario desee visualizar en la categoria por genero
+  #' Permite una visualizacion dinamica
+  #' @param eventReactive es la funcion que establece que el evento del selectInput sea reactivo
+  #' @param input$entradas es la informacion del selectInput
+  #'  
   entradasInput <- eventReactive(input$entradas,{
     switch(input$entradas,
            "20071" = "20071",
@@ -24,6 +33,14 @@ server <- function(input, output) {
            "20131" = "20131",
            "20132" = "20132")
   }, ignoreNULL = FALSE)
+  
+  #' Dato reactivo \code{datosVInput}
+  #'  
+  #' Permite crear un evento reactivo con la carga viral, celulas CD4 y CD8 que el usuario desee visualizar
+  #' Permite una visualizacion dinamica
+  #' @param eventReactive es la funcion que establece que el evento del selectInput sea reactivo
+  #' @param input$DatosV es la informacion del selectInput
+  #'  
   datosVInput <- eventReactive(input$DatosV,{
     switch(input$DatosV,
            "Carga viral plasmatica" = dato()$CVP,
@@ -31,6 +48,12 @@ server <- function(input, output) {
            "Celulas CD8" = dato()$CD8)
   }, ignoreNULL = FALSE)
   
+  #' Dato reactivo selectajusteInput
+  #' Permite crear un evento reactivo con la carga viral, celulas CD4 y CD8 que el usuario desee visualizar
+  #' Permite una visualizacion dinamica
+  #' @param eventReactive es la funcion que establece que el evento del selectInput sea reactivo
+  #' @param input$selectajuste es la informacion del selectInput
+  #'
   selectajusteInput <- eventReactive(input$selectajuste,{
     switch(input$selectajuste,
            "Carga viral plasmatica" = dato()$CVP,
@@ -38,6 +61,12 @@ server <- function(input, output) {
            "Celulas CD8" = dato()$CD8)
   }, ignoreNULL = FALSE)
   
+  #' Dato reactivo \code{selectcargaInput}
+  #' Permite crear un evento reactivo con la carga viral, celulas CD4 y CD8 que el usuario desee visualizar
+  #' Permite una visualizacion dinamica
+  #' @param eventReactive es la funcion que establece que el evento del selectInput sea reactivo
+  #' @param input$selectcarga es la informacion del selectInput
+  #'
   selectcargaInput <- eventReactive(input$selectcarga,{
     switch(input$selectcarga,
            "Carga viral plasmatica" = dato()$CVP,
@@ -45,15 +74,34 @@ server <- function(input, output) {
            "Celulas CD8" = dato()$CD8)
   }, ignoreNULL = FALSE)
   
+  #' Dato reactivo \code{dato}
+  #' Permite crear un evento reactivo con la informacion cargada del archivo
+  #' Permite una visualizacion dinamica
+  #' @param reactive es la funcion que establece que la informacion sea reactiva
+  #' El \code{file1} Carga el archivo
+  #' El \code{input$file} es la informacion del archivo que se cargo
+  #' \code{is.null(file1)} se realiza una condicion para chequear que realmente se carga el archivo
+  #' si no cargo nada solo devuelve un \code{return()}
+  #' en caso contrario, me guarda la informacion
+  #' en \code{read.table}
+  #' @param file1$datapath es la ubicacion del archivo
+  #' @param sep es el metodo de separacion de todo el archivo
+  #' @param header verifica si tiene cabecera el archivo
+  #' @examples 
+  #' \code{read.table(/data/proyecto/file.csv",sep=",",header=FALSE)}
+  #' \code{read.table(/data/proyecto/file.csv",sep=" ",header=FALSE)}
+  #' \code{read.table(/data/proyecto/file.csv",sep=";",header=FALSE)}
+  #' 
   dato <-reactive({
     file1 <- input$file 
     
     if(is.null(file1)){return()}
     
-    dat <- read.table(file1$datapath, sep = ",", header = TRUE)
+    read.table(file1$datapath, sep = ",", header = TRUE)
     
   })
   #--------------------------Carga de archivos
+  #' 
   output$filedf <- renderTable({
     if(is.null(dato())){return()}
     input$file
@@ -72,6 +120,16 @@ server <- function(input, output) {
   output$tb <- renderUI({
     if(is.null(dato())){
       h5("No hay ninguna informacion cargada")
+      h5(helpText("Los datos deben estar separados con coma (,)"))
+      h5(helpText("Datos obligatorios:"))
+      h5(helpText("PAC -> Id del paciente, valor numerico"))
+      h5(helpText("CVP -> Carga viral plasmatica"))
+      h5(helpText("CD4 -> Celulas TCD4"))
+      h5(helpText("CD8 -> Celulas TCD8"))
+      h5(helpText("Genero -> 0 es masculino, 1 es femenino"))
+      h5(helpText("Sex -> f o m"))
+      h5(helpText("Edad"))
+      h5(helpText("Peri -> Periodo por semestres. Ejem: 20071"))
     }
     else{
       
@@ -255,9 +313,7 @@ server <- function(input, output) {
       
       sidebarLayout(
         sidebarPanel(
-          checkboxInput("mapainput",label = "Incluir mapa"),
-          selectInput("valor1",label = "Region",selected = "east",choices = c("east","west","north","south")),
-          fileInput("valor2",label = "Input",placeholder = "No file selected")
+          checkboxInput("mapainput",label = "Incluir mapa")
           
         ),
         mainPanel(
