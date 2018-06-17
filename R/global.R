@@ -36,14 +36,14 @@ library(sqldf)
 #' @param ../Data/VEN_adm2.csv Fichero donde esta ubicado el archivo
 #' @param header Es la cabecera del archivo, es decir, los nombres de las variables
 #' @param sep Es el metodo para separar los datos en el archivo
-info <- read.csv("../data/VEN_adm2.csv",header = TRUE,sep = ",")
+info <- read.csv("VEN_adm2.csv",header = TRUE,sep = ",")
 
 #' Carga del archivo .shp del mapa de venezuela
 #' El \code{readOGR} Permite cargar el archivo .shp  para cargar el mapa
 #' @param VEN_adm2.shp Fichero donde esta ubicado el archivo
 #' @param layer Es la capa del mapa
 #' @return Me devuelve el mapa
-map<-readOGR("../data/VEN_adm2.shp", layer="VEN_adm2")
+map<-readOGR("VEN_adm2.shp", layer="VEN_adm2")
 
 
 

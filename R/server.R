@@ -101,35 +101,37 @@ server <- function(input, output) {
     
   })
   #--------------------------Carga de archivos
-  #' 
+  #' Muestra la informacion referente al nombre del archivo y la extension
+  #' @description 
+  #' Crea un \code{renderTable} con la informacion del nombre, la extension y la ubicacion del archivo
+  #' Verifica si esta cargado el archivo, sino se regresa
+  #' si carga muestra la informacion
   output$filedf <- renderTable({
     if(is.null(dato())){return()}
     input$file
     
   })
+  #' Muestra la informacion del archivo
+  #' @description 
+  #' Crea un \code{renderDataTable} con la informacion cargada del archivo
+  #' Primero verifica si se carga el archivo
   output$info <- renderDataTable({
     if(is.null(dato())){return()}
     dato()
   })
+  #' Muestra el resumen de la informacion con las variables cargadas del sistema
   
   output$summary <- renderTable({
     dataset <- dato()
     summary(dataset)
   })
-  
+  #' Me carga el panel de la informacion del archivo
+  #' @description 
+  #' Cuando la informacion es cargada al sistema, aparece un pequeño panel con las opciones
+  #' de acerca del archivo, informacion y resumen de la informacion
   output$tb <- renderUI({
     if(is.null(dato())){
       h5("No hay ninguna informacion cargada")
-      h5(helpText("Los datos deben estar separados con coma (,)"))
-      h5(helpText("Datos obligatorios:"))
-      h5(helpText("PAC -> Id del paciente, valor numerico"))
-      h5(helpText("CVP -> Carga viral plasmatica"))
-      h5(helpText("CD4 -> Celulas TCD4"))
-      h5(helpText("CD8 -> Celulas TCD8"))
-      h5(helpText("Genero -> 0 es masculino, 1 es femenino"))
-      h5(helpText("Sex -> f o m"))
-      h5(helpText("Edad"))
-      h5(helpText("Peri -> Periodo por semestres. Ejem: 20071"))
     }
     else{
       
@@ -138,6 +140,12 @@ server <- function(input, output) {
   })
   
   #---------------------------------Visualizacion del mapa
+  #' Visualizacion del mapa
+  #' @description 
+  #' primero realiza la validacion de si carga o no la informacion de los datos
+  #' para cargar el mapa en el sistema
+  #' si se cargo el archivo, envia un output con la variable \code{mapa1}
+  #' donde va a renderizar el mapa con el paquete leaflet
   output$mapa <- renderUI({
     if(is.null(dato())){
       h5("No hay ninguna informacion cargada")
@@ -152,6 +160,11 @@ server <- function(input, output) {
     }
     
   })
+  #' Crea el renderLeaflet para visualizar el mapa
+  #' @description 
+  #' Primero realiza una condicion para evitar los datos que no tengan la longitud para visualizarla en el mapa
+  #' con \code{idx} omite los datos NA y con \code{tre} carga la tabla completa con los datos omitiendo los na
+  #' el \code{leaflet(map)} carga el mapa
   output$mapa1 <- renderLeaflet({
     idx <- with(info, is.na(info$LNG)==FALSE)
     tre <-info[idx,]
@@ -163,6 +176,11 @@ server <- function(input, output) {
   })
   
   #--------------------------------Visualizacion de los graficos
+  
+  #' Muestra la visualizacion grafica de la exploracion de datos
+  #' @description 
+  #' Muestra 3 paneles con 3 categorias distintas: Genero, Edad y Carga
+  #'   
   output$grafica <- renderUI({
     if(is.null(dato())){
       h5("No hay ninguna informacion cargada")
@@ -198,6 +216,11 @@ server <- function(input, output) {
     }
     
   })
+  #' Muestra un grafico de tortas con el genero
+  #' @description 
+  #' Visualiza graficos de torta de genero por periodos
+  #' Primero realiza una validacion para que no muestre los datos que na
+  #' Visualiza el grafico de torta por medio del paquete \code{plotly} 
   output$piechart <- renderPlotly({
     idx <- with(dato(), Peri == entradasInput() & is.na(CVP)==FALSE)
     tre <-dato()[idx,]
@@ -222,6 +245,7 @@ server <- function(input, output) {
     
     
   })
+  #' Muestra un histograma de los edades de los datos cargados
   output$histogram <- renderPlotly({
     idx <- with(dato(), is.na(CVP)==FALSE)
     tre <-dato()[idx,]
@@ -234,6 +258,7 @@ server <- function(input, output) {
              yaxis = list(title = 'Frecuencia'))
   })
   
+  #' Muestra un grafico de lineas con el comportamiento de la carga viral plasmatica, celulas CD4 y CD8
   output$line <- renderPlotly({
     
     variable <- selectcargaInput()
@@ -247,7 +272,10 @@ server <- function(input, output) {
   
   #----------------------------Ajuste del modelo
   
-  
+  #' Muestra el resultado de la aplicacion del modelo lineal mixto
+  #' @description 
+  #' permite escoger si sera por la carga viral plasmatica, celulas CD4 y CD8
+  #' y si se aplicara el REML
   output$analisis <- renderUI({
     if(is.null(dato())){
       h5("No hay ninguna informacion cargada")
@@ -270,6 +298,7 @@ server <- function(input, output) {
     }
   })  
   
+  #' Muestra la salida del formula del modelo lineal mixto
   output$sum <- renderPrint({
      
      variable <-  selectajusteInput() 
@@ -278,6 +307,10 @@ server <- function(input, output) {
   })
   
   #-------------------------------Validacion de los datos
+  #' Muestra los residuos encontrados en la formaula del modelo lineal mixto
+  #' @description 
+  #' Primero escoger entre la carga viral plasmatica, celulas CD4 y CD8
+  #' para visualiza mediante una grafica, la visualizacion de los datos
   output$validacion <- renderUI({
     if(is.null(dato())){
       h5("No hay ninguna informacion cargada")
@@ -293,6 +326,7 @@ server <- function(input, output) {
       )
     }
   })
+  #' Graficacion de los residuos del modelo lineal mixto
   output$valido <- renderPlot({
     variable <- datosVInput()
     M1RML <- lmer(variable ~ 1 + Fecha  + Edad + EI + (Fecha|Pac), data = dato(), REML = FALSE) 
@@ -304,7 +338,9 @@ server <- function(input, output) {
   
   
   #-----------------------------------------------Reportes
-  
+  #' Genera el reporte con los datos
+  #' @description 
+  #' Genera el reporte con el mapa, los graficos y los resultados estadisticos expuestos en la aplicacion 
   output$reporte <- renderUI({
     if(is.null(dato())){
       h5("No hay ninguna informacion cargada")

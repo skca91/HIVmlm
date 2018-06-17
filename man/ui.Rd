@@ -10,24 +10,6 @@ ui
 }
 \description{
 Archivo de la interfaz grafica donde permite definir la estructura grafica de la aplicacion
-
-permite cargar un archivo externo de la aplicacion para poderlo procesar en la aplicacion
-Visualizacion del mapa
-
-Permite visualizar en el mapa, la propagacion de la enfermedad con respecto a la ubicacion geografica
-Exploracion de datos
-
-Permite visualizar mediante graficos los datos cargados por medio del archivo
-graficos de torta, histogramas y graficos de puntos
-Ajuste del modelo
-
-Permite observar los valores del modelo lineal mixto con los datos cargados en la aplicacion
-Validacion del Modelo
-
-Permite observar mediante graficos los residuos del modelo lineal mixto, para comprobarsi los datos se ajustan bien
-Generar Reporte
-
-Permite descargar un archivo pdf con la informacion que el usuario desee visualizar y guardar
 }
 \author{
 Stephanie Correa
@@ -37,5 +19,20 @@ Stephanie Correa
  El \code{fluidPage} permite cargar todo el diseño grafico de la aplicacion
 Titulo de la Aplicacion
 Carga del Archivo
+permite cargar un archivo externo de la aplicacion para poderlo procesar en la aplicacion
+Visualizacion del mapa
+Permite visualizar en el mapa, la propagacion de la enfermedad con respecto a la ubicacion geografica
+Exploracion de datos
+Permite visualizar mediante graficos los datos cargados por medio del archivo
+graficos de torta, histogramas y graficos de puntos
+Ajuste del modelo
+
+Permite observar los valores del modelo lineal mixto con los datos cargados en la aplicacion
+Validacion del Modelo
+ 
+Permite observar mediante graficos los residuos del modelo lineal mixto, para comprobarsi los datos se ajustan bien
+Generar Reporte
+ 
+Permite descargar un archivo pdf con la informacion que el usuario desee visualizar y guardar
 }
 \keyword{datasets}
