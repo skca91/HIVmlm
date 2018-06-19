@@ -2,7 +2,16 @@
 title: "Reporte sobre el seguimiento de la infeccion VIH"
 author: "Stephanie Correa"
 output: word_document()
+latex_engine: XeLaTeX
+geometry: left = 2cm, right = 2cm, top = 2cm, bottom = 2cm
+mainfont: Arial
 ---
+
+```{r global_options, include = FALSE}
+knitr::opts_chunk$set(message=FALSE, 
+tidy.opts=list(width.cutoff=60)) 
+```
+
 ##Visualizacion en el mapa
 ```{r echo=FALSE}
 map = map[map$ID_1 == 15,]
