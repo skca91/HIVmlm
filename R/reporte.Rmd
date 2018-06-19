@@ -1,0 +1,73 @@
+---
+title: "Reporte sobre el seguimiento de la infeccion VIH"
+author: "Stephanie Correa"
+output: word_document()
+---
+##Visualizacion en el mapa
+```{r echo=FALSE}
+map = map[map$ID_1 == 15,]
+plot (map, border="grey", axes=T)
+```
+
+
+##Exploracion de datos
+
+Exploracion por genero
+
+
+
+##Histograma de Edades
+
+```{r echo=FALSE}
+idx <- with(dato(), is.na(CVP)==FALSE)
+tre <-dato()[idx,]
+qplot(tre$Edad, geom = "histogram",
+      main = "Histograma de Edades",
+      xlab = "Edad",
+      col=I("blue"),
+      alpha=I(0.3),
+      binwidth=10)
+```
+
+##Grafico de puntos
+
+##Comportamiento de la carga viral plasmatica por periodo
+```{r echo=FALSE}
+ idx <- with(dato(), is.na(CVP)==FALSE)
+ tre <-dato()[idx,]
+ ggplot(tre, aes(x= as.character.Date(tre$Peri),y= tre$CVP))+
+          geom_point()+
+          xlab("Periodo") + ylab("Carga viral plasmtica")
+```
+
+##Comportamiento de las celulas CD4 por periodo
+```{r echo=FALSE}
+idx <- with(dato(), is.na(CVP)==FALSE)
+ tre <-dato()[idx,]
+ ggplot(tre, aes(x= as.character.Date(tre$Peri),y= tre$CD4))+
+          geom_point()+
+          xlab("Periodo") + ylab("Celulas CD4")
+```
+
+##Comportamiento de las celulas CD8 por periodo
+```{r echo=FALSE, warning=FALSE}
+idx <- with(dato(), is.na(CVP)==FALSE)
+ tre <-dato()[idx,]
+ ggplot(tre, aes(x= as.character.Date(tre$Peri),y= tre$CD8))+
+          geom_point()+
+          xlab("Periodo") + ylab("Celulas CD8")
+```
+
+##Ajuste del modelo
+```{r echo=FALSE, warning=FALSE}
+     M0 <- lmer(LogCVP ~ 1 + Fecha +  CVP + (1|Pac), data = dato(), REML = TRUE)
+     summary(M0)
+```
+
+##Validacion del modelo
+
+```{r echo=FALSE, warning=FALSE}
+M1RML <- lmer(CVP ~ 1 + Fecha  + Edad + EI + (Fecha|Pac), data = dato(), REML = FALSE) 
+    qqmath (M1RML,id =0.05)
+```
+

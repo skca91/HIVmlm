@@ -99,6 +99,7 @@ server <- function(input, output) {
     
     read.table(file1$datapath, sep = ",", header = TRUE)
     
+    
   })
   #--------------------------Carga de archivos
   #' Muestra la informacion referente al nombre del archivo y la extension
@@ -349,16 +350,35 @@ server <- function(input, output) {
       
       sidebarLayout(
         sidebarPanel(
-          checkboxInput("mapainput",label = "Incluir mapa")
+          downloadButton('downloadReport', label = "Descargar Archivo")
           
         ),
         mainPanel(
-          h5("Holaa")
+         # load("presentacion.Rmd")
         )
       )
     }
   })
   
+  output$downloadReport <- downloadHandler(
+    filename = function() {
+      paste('reporte', sep = '.','docx')
+    },
+    
+    content = function(file) {
+      src <- normalizePath('reporte.Rmd')
+      
+      # temporarily switch to the temp dir, in case you do not have write
+      # permission to the current working directory
+      owd <- setwd(tempdir())
+      on.exit(setwd(owd))
+      file.copy(src, 'reporte.Rmd', overwrite = TRUE)
+      
+      library(rmarkdown)
+      out <- render('reporte.Rmd', word_document())
+      file.rename(out, file)
+    }
+  )
 }
 
 
