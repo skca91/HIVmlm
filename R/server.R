@@ -373,10 +373,12 @@ server <- function(input, output) {
       owd <- setwd(tempdir())
       on.exit(setwd(owd))
       file.copy(src, 'reporte.Rmd', overwrite = TRUE)
+      param <- list(reml = input$REML, ajuste = selectajusteInput(), carga = selectcargaInput(), validacion = datosVInput())
       
       library(rmarkdown)
-      out <- render('reporte.Rmd', word_document())
+      out <- render('reporte.Rmd', params = param,word_document(), envir = new.env())
       file.rename(out, file)
+      
     }
   )
 }

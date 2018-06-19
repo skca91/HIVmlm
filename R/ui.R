@@ -12,9 +12,9 @@ ui <- fluidPage(
   
   # App title ----
   #' Titulo de la Aplicacion
-  titlePanel("UNET"),
+  titlePanel("HIVmlm Human Inmunology Virus linear model mixed"),
   fluidRow(
-    navbarPage(img("UNET"),
+    navbarPage(img(src="lacito_rojo.png", alt="HIV", height = 20, width = 20),
                #' Carga del Archivo
                #' permite cargar un archivo externo de la aplicacion para poderlo procesar en la aplicacion
                tabPanel("Carga de Datos",
