@@ -1,6 +1,5 @@
 ---
 title: "Reporte sobre el seguimiento de la infeccion VIH"
-author: "Stephanie Correa"
 output: word_document()
 latex_engine: XeLaTeX
 geometry: left = 2cm, right = 2cm, top = 2cm, bottom = 2cm
@@ -14,8 +13,10 @@ params:
 ---
 
 ```{r global_options, include = FALSE}
-knitr::opts_chunk$set(message=FALSE, 
-tidy.opts=list(width.cutoff=60)) 
+
+
+knitr::opts_chunk$set(message = FALSE,
+tidy.opts = list(width.cutoff = 60)) 
 ```
 
 <!-- ##Visualizacion en el mapa -->
@@ -29,12 +30,12 @@ tidy.opts=list(width.cutoff=60))
 
 ####Exploracion por genero
 ```{r echo=FALSE, warning=FALSE, fig.align='center'}
-idx <- with(dato(), Peri == params$periodo & is.na(CVP)==FALSE)
-tre <-dato()[idx,]
-sexo <- c(tre[,5])
-tiposex <- rep(NA,length(sexo))
-tiposex[sexo==0] <-'Masculino'
-tiposex[sexo==1] <-'Femenino'
+idx <- with(dato(), Peri == params$periodo & is.na(CVP) == FALSE)
+tre <- dato()[idx, ]
+sexo <- c(tre[, 5])
+tiposex <- rep(NA, length(sexo))
+tiposex[sexo == 0] <- 'Masculino'
+tiposex[sexo == 1] <- 'Femenino'
 frec.tipo.sex <- table(tiposex)
 pie(frec.tipo.sex)
 ```
@@ -44,34 +45,42 @@ pie(frec.tipo.sex)
 ###Histograma de Edades
 
 ```{r echo=FALSE, fig.align='center'}
-idx <- with(dato(), is.na(CVP)==FALSE)
-tre <-dato()[idx,]
-qplot(tre$Edad, geom = "histogram",
-      main = "Histograma de Edades",
-      xlab = "Edad",
-      col=I("blue"),
-      alpha=I(0.3),
-      binwidth=10)
+idx <- with(dato(), is.na(CVP) == FALSE)
+tre <- dato()[idx, ]
+qplot(
+tre$Edad,
+geom = "histogram",
+main = "Histograma de Edades",
+xlab = "Edad",
+col = I("blue"),
+alpha = I(0.3),
+binwidth = 10
+)
 ```
 
 ###Grafico de puntos
 
 ####Comportamiento por periodo
 ```{r echo=FALSE, warning=FALSE, fig.align='center'}
- 
- variable <- params$carga
- ggplot(dato(), aes(x= as.character.Date(Peri),y= variable))+
-          geom_point()+
-          xlab("Periodo") + ylab("Variable")
+
+
+variable <- params$carga
+ggplot(dato(), aes(x = as.character.Date(Peri), y = variable)) +
+geom_point() +
+xlab("Periodo") + ylab("Variable")
 ```
 
 
 ###Ajuste del modelo
 
 ```{r echo=FALSE, warning=FALSE}
-     variable <- params$ajuste
-     M0 <- lmer(LogCVP ~ 1 + Fecha +  variable + (1|Pac), data = dato(), REML = params$reml)
-     summary(M0)
+variable <- params$ajuste
+M0 <-
+lmer(LogCVP ~ 1 + Fecha +  variable + (1 |
+Pac),
+data = dato(),
+REML = params$reml)
+summary(M0)
 ```
 
 
@@ -80,7 +89,11 @@ qplot(tre$Edad, geom = "histogram",
 
 ```{r echo=FALSE, warning=FALSE, fig.align='center'}
 variable <- params$validacion
-M1RML <- lmer(variable ~ 1 + Fecha  + Edad + EI + (Fecha|Pac), data = dato(), REML = FALSE) 
-    qqmath (M1RML,id =0.05)
+M1RML <-
+lmer(variable ~ 1 + Fecha  + Edad + EI + (Fecha |
+Pac),
+data = dato(),
+REML = FALSE)
+qqmath (M1RML, id = 0.05)
 ```
 
