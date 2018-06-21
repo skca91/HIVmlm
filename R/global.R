@@ -31,6 +31,8 @@ library(sqldf)
 
 
 
+
+
 #' Carga de la informacion del mapa
 #' El \code{read.csv} Permite cargar el archivo .csv  para cargar la informacion del mapa
 #' @param ../Data/VEN_adm2.csv Fichero donde esta ubicado el archivo

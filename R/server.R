@@ -155,7 +155,6 @@ server <- function(input, output) {
       
       column(12,
              leafletOutput("mapa1")
-             
       )
       
     }
@@ -301,10 +300,10 @@ server <- function(input, output) {
   
   #' Muestra la salida del formula del modelo lineal mixto
   output$sum <- renderPrint({
-     
-     variable <-  selectajusteInput() 
-     M0 <- lmer(LogCVP ~ 1 + Fecha +  variable + (1|Pac), data = dato(), REML = input$REML)
-     summary(M0)
+    
+    variable <-  selectajusteInput() 
+    M0 <- lmer(LogCVP ~ 1 + Fecha +  variable + (1|Pac), data = dato(), REML = input$REML)
+    summary(M0)
   })
   
   #-------------------------------Validacion de los datos
@@ -332,9 +331,6 @@ server <- function(input, output) {
     variable <- datosVInput()
     M1RML <- lmer(variable ~ 1 + Fecha  + Edad + EI + (Fecha|Pac), data = dato(), REML = FALSE) 
     qqmath (M1RML,id =0.05)
-    
-    
-    
   })
   
   
@@ -354,7 +350,7 @@ server <- function(input, output) {
           
         ),
         mainPanel(
-         # load("presentacion.Rmd")
+          # plotOutput("Reporte")
         )
       )
     }
@@ -373,7 +369,7 @@ server <- function(input, output) {
       owd <- setwd(tempdir())
       on.exit(setwd(owd))
       file.copy(src, 'reporte.Rmd', overwrite = TRUE)
-      param <- list(reml = input$REML, ajuste = selectajusteInput(), carga = selectcargaInput(), validacion = datosVInput())
+      param <- list(reml = input$REML, ajuste = selectajusteInput(), carga = selectcargaInput(), validacion = datosVInput(), periodo = entradasInput())
       
       library(rmarkdown)
       out <- render('reporte.Rmd', params = param,word_document(), envir = new.env())
@@ -381,7 +377,9 @@ server <- function(input, output) {
       
     }
   )
+  # output$reporte <- renderPlot({
+  #  
+  # })
+  
+  
 }
-
-
-

@@ -10,6 +10,7 @@ params:
   ajuste: NA
   carga: NA
   validacion: NA
+  periodo: NA
 ---
 
 ```{r global_options, include = FALSE}
@@ -17,20 +18,30 @@ knitr::opts_chunk$set(message=FALSE,
 tidy.opts=list(width.cutoff=60)) 
 ```
 
-##Visualizacion en el mapa
-```{r echo=FALSE, fig.align='center'}
-map = map[map$ID_1 == 15,]
-plot (map, border="grey", axes=T)
+<!-- ##Visualizacion en el mapa -->
+<!-- ```{r echo=FALSE, fig.align='center'} -->
+<!-- map = map[map$ID_1 == 15,] -->
+<!-- plot (map, border="grey", axes=T) -->
+<!-- ``` -->
+
+
+###Exploracion de datos
+
+####Exploracion por genero
+```{r echo=FALSE, warning=FALSE, fig.align='center'}
+idx <- with(dato(), Peri == params$periodo & is.na(CVP)==FALSE)
+tre <-dato()[idx,]
+sexo <- c(tre[,5])
+tiposex <- rep(NA,length(sexo))
+tiposex[sexo==0] <-'Masculino'
+tiposex[sexo==1] <-'Femenino'
+frec.tipo.sex <- table(tiposex)
+pie(frec.tipo.sex)
 ```
 
 
-##Exploracion de datos
 
-Exploracion por genero
-
-
-
-##Histograma de Edades
+###Histograma de Edades
 
 ```{r echo=FALSE, fig.align='center'}
 idx <- with(dato(), is.na(CVP)==FALSE)
@@ -43,9 +54,9 @@ qplot(tre$Edad, geom = "histogram",
       binwidth=10)
 ```
 
-##Grafico de puntos
+###Grafico de puntos
 
-##Comportamiento por periodo
+####Comportamiento por periodo
 ```{r echo=FALSE, warning=FALSE, fig.align='center'}
  
  variable <- params$carga
@@ -54,14 +65,18 @@ qplot(tre$Edad, geom = "histogram",
           xlab("Periodo") + ylab("Variable")
 ```
 
-##Ajuste del modelo
+
+###Ajuste del modelo
+
 ```{r echo=FALSE, warning=FALSE}
      variable <- params$ajuste
      M0 <- lmer(LogCVP ~ 1 + Fecha +  variable + (1|Pac), data = dato(), REML = params$reml)
      summary(M0)
 ```
 
-##Validacion del modelo 
+
+###Validacion del modelo 
+
 
 ```{r echo=FALSE, warning=FALSE, fig.align='center'}
 variable <- params$validacion

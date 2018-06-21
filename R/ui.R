@@ -12,7 +12,7 @@ ui <- fluidPage(
   
   # App title ----
   #' Titulo de la Aplicacion
-  titlePanel("HIVmlm Human Inmunology Virus linear model mixed"),
+  titlePanel("HIVmlm"),
   fluidRow(
     navbarPage(img(src="lacito_rojo.png", alt="HIV", height = 20, width = 20),
                #' Carga del Archivo
