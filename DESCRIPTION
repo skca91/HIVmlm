@@ -1,12 +1,12 @@
-Package: Proyecto
-Title: Aplicacion web para el seguimiento de la infeccion VIH
-Version: 1.1
-Authors@R: person("Stephanie", "Correa", email = "stephanie.correa24@gmail.com",
-                  role = c("aut", "cre"))
-Description: Desarrollo de una aplicacion Web para el estudio de datos longitudinales para el seguimiento de la infeccion por el Virus de Inmunodeficiencia Humana, caso de estudio: Instituto Autonomo Hospital Universitario de los Andes
-Depends: R (>= 3.1.0)
-License: MIT
+Package: HIVmlm
 Type: Package
+Title: Human inmunology virus linear model mixed effects
+Version: 0.1.0
+Author: Stephanie Correa
+Maintainer: Stephanie Correa <stephanie.correa24@gmail.com>
+Description: Aplicacion web para el estudio de los datos longitudinales para el seguimiento de la infeccion VIH  
+License: MIT
+Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.0.1
 Imports: ggplot2,
