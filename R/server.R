@@ -1,10 +1,23 @@
-#' Archivo Servidor
-#'
+#' Funcion comprobar
 #' @description
-#' Archivo donde se realiza el calculo, graficos y mapa de la aplicacion
-#' @param input todas las entradas de la aplicacion
-#' @param output todas las salidas de la aplicacion
+#' Permite revisar la extension del archivo cargado
 #'
+comprobar <- function(extension, nombreArch) {
+  if (grepl(extension, nombreArch, fixed = TRUE)) {
+    return(TRUE)
+  }
+  else{
+    return(FALSE)
+  }
+}
+#' Funcion filename
+#' @description 
+#' Permite guardar el nombre del reporte a descargar con su extension
+filename = function() {
+  paste('reporte', sep = '.', 'docx')
+}
+
+
 server <- function(input, output)
 {
   #---------------------Reactivos
@@ -119,16 +132,7 @@ server <- function(input, output)
     }
     
   })
-  #' Funcion que comprueba la extension del archivo subido
-  #'
-  comprobar <- function(extension, nombreArch) {
-    if (grepl(extension, nombreArch, fixed = TRUE)) {
-      return(nombreArch)
-    }
-    else{
-      return(FALSE)
-    }
-  }
+  
   #--------------------------Carga de archivos
   #' Muestra la informacion referente al nombre del archivo y la extension
   #' @description
@@ -459,7 +463,7 @@ server <- function(input, output)
   #' @description
   #' Genera el reporte con el mapa, los graficos y los resultados estadisticos expuestos en la aplicacion
   output$reporte <- renderUI({
-    if (is.null(dato())){
+    if (is.null(dato())) {
       h5("No hay ninguna informacion cargada")
     } else{
       if (isFALSE(extension())) {
@@ -468,20 +472,15 @@ server <- function(input, output)
         sidebarLayout(sidebarPanel(
           downloadButton('downloadReport', label = "Descargar Archivo")
         ),
-        mainPanel(
-          #plotOutput("Reporte"))
-          )
-        )
+        mainPanel())
       }
       
     }
   })
   
   output$downloadReport <- downloadHandler(
-    filename = function() {
-      paste('reporte', sep = '.', 'docx')
-    },
-    
+   
+    filename(),
     content = function(file) {
       src <- normalizePath('reporte.Rmd')
       
@@ -508,8 +507,7 @@ server <- function(input, output)
       file.rename(out, file)
       
     }
+    
   )
-  # output$reporte <- renderPlot({
-  #
-  # })
+  
 }

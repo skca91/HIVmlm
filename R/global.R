@@ -40,4 +40,5 @@ info <- read.csv("../data/VEN_adm2.csv", header = TRUE, sep = ",")
 #' @param VEN_adm2.shp Fichero donde esta ubicado el archivo
 #' @param layer Es la capa del mapa
 #' @return Me devuelve el mapa
+#../data/
 map <- readOGR("../data/VEN_adm2.shp", layer = "VEN_adm2")

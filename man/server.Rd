@@ -2,28 +2,26 @@
 % Please edit documentation in R/server.R
 \name{server}
 \alias{server}
-\title{Archivo Servidor}
+\title{Dato reactivo \code{entradasInput}
+Permite crear un evento reactivo con el periodo que el usuario desee visualizar en la categoria por genero
+Permite una visualizacion dinamica}
 \usage{
 server(input, output)
 }
 \arguments{
-\item{input}{todas las entradas de la aplicacion}
-
-\item{output}{todas las salidas de la aplicacion}
-
 \item{eventReactive}{es la funcion que establece que el evento del selectInput sea reactivo}
 
 \item{input$entradas}{es la informacion del selectInput
- 
+
 Dato reactivo \code{datosVInput}
- 
+
 Permite crear un evento reactivo con la carga viral, celulas CD4 y CD8 que el usuario desee visualizar
 Permite una visualizacion dinamica}
 
 \item{eventReactive}{es la funcion que establece que el evento del selectInput sea reactivo}
 
 \item{input$DatosV}{es la informacion del selectInput
- 
+
 Dato reactivo selectajusteInput
 Permite crear un evento reactivo con la carga viral, celulas CD4 y CD8 que el usuario desee visualizar
 Permite una visualizacion dinamica}
@@ -59,8 +57,6 @@ en \code{read.table}}
 \item{header}{verifica si tiene cabecera el archivo}
 }
 \description{
-Archivo donde se realiza el calculo, graficos y mapa de la aplicacion
-
 Crea un \code{renderTable} con la informacion del nombre, la extension y la ubicacion del archivo
 Verifica si esta cargado el archivo, sino se regresa
 si carga muestra la informacion
@@ -87,12 +83,12 @@ el \code{leaflet(map)} carga el mapa
 Muestra la visualizacion grafica de la exploracion de datos
 
 Muestra 3 paneles con 3 categorias distintas: Genero, Edad y Carga
-  
+
 Muestra un grafico de tortas con el genero
 
 Visualiza graficos de torta de genero por periodos
 Primero realiza una validacion para que no muestre los datos que na
-Visualiza el grafico de torta por medio del paquete \code{plotly} 
+Visualiza el grafico de torta por medio del paquete \code{plotly}
 Muestra un histograma de los edades de los datos cargados
 Muestra un grafico de lineas con el comportamiento de la carga viral plasmatica, celulas CD4 y CD8
 Muestra el resultado de la aplicacion del modelo lineal mixto
@@ -108,11 +104,4 @@ Graficacion de los residuos del modelo lineal mixto
 Genera el reporte con los datos
 
 Genera el reporte con el mapa, los graficos y los resultados estadisticos expuestos en la aplicacion
-}
-\author{
-Stephanie Correa
-
-Dato reactivo \code{entradasInput} 
-Permite crear un evento reactivo con el periodo que el usuario desee visualizar en la categoria por genero
-Permite una visualizacion dinamica
 }
