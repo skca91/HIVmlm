@@ -4,57 +4,9 @@
 \alias{server}
 \title{Dato reactivo \code{entradasInput}
 Permite crear un evento reactivo con el periodo que el usuario desee visualizar en la categoria por genero
-Permite una visualizacion dinamica}
+Dato reactivo \code{datosVInput}}
 \usage{
 server(input, output)
-}
-\arguments{
-\item{eventReactive}{es la funcion que establece que el evento del selectInput sea reactivo}
-
-\item{input$entradas}{es la informacion del selectInput
-
-Dato reactivo \code{datosVInput}
-
-Permite crear un evento reactivo con la carga viral, celulas CD4 y CD8 que el usuario desee visualizar
-Permite una visualizacion dinamica}
-
-\item{eventReactive}{es la funcion que establece que el evento del selectInput sea reactivo}
-
-\item{input$DatosV}{es la informacion del selectInput
-
-Dato reactivo selectajusteInput
-Permite crear un evento reactivo con la carga viral, celulas CD4 y CD8 que el usuario desee visualizar
-Permite una visualizacion dinamica}
-
-\item{eventReactive}{es la funcion que establece que el evento del selectInput sea reactivo}
-
-\item{input$selectajuste}{es la informacion del selectInput
-
-Dato reactivo \code{selectcargaInput}
-Permite crear un evento reactivo con la carga viral, celulas CD4 y CD8 que el usuario desee visualizar
-Permite una visualizacion dinamica}
-
-\item{eventReactive}{es la funcion que establece que el evento del selectInput sea reactivo}
-
-\item{input$selectcarga}{es la informacion del selectInput
-
-Dato reactivo \code{dato}
-Permite crear un evento reactivo con la informacion cargada del archivo
-Permite una visualizacion dinamica}
-
-\item{reactive}{es la funcion que establece que la informacion sea reactiva
-El \code{file1} Carga el archivo
-El \code{input$file} es la informacion del archivo que se cargo
-\code{is.null(file1)} se realiza una condicion para chequear que realmente se carga el archivo
-si no cargo nada solo devuelve un \code{return()}
-en caso contrario, me guarda la informacion
-en \code{read.table}}
-
-\item{file1$datapath}{es la ubicacion del archivo}
-
-\item{sep}{es el metodo de separacion de todo el archivo}
-
-\item{header}{verifica si tiene cabecera el archivo}
 }
 \description{
 Crea un \code{renderTable} con la informacion del nombre, la extension y la ubicacion del archivo
@@ -70,38 +22,25 @@ Me carga el panel de la informacion del archivo
 Cuando la informacion es cargada al sistema, aparece un pequeño panel con las opciones
 de acerca del archivo, informacion y resumen de la informacion
 Visualizacion del mapa
-
-primero realiza la validacion de si carga o no la informacion de los datos
-para cargar el mapa en el sistema
-si se cargo el archivo, envia un output con la variable \code{mapa1}
-donde va a renderizar el mapa con el paquete leaflet
 Crea el renderLeaflet para visualizar el mapa
-
-Primero realiza una condicion para evitar los datos que no tengan la longitud para visualizarla en el mapa
-con \code{idx} omite los datos NA y con \code{tre} carga la tabla completa con los datos omitiendo los na
-el \code{leaflet(map)} carga el mapa
 Muestra la visualizacion grafica de la exploracion de datos
-
-Muestra 3 paneles con 3 categorias distintas: Genero, Edad y Carga
-
 Muestra un grafico de tortas con el genero
-
-Visualiza graficos de torta de genero por periodos
-Primero realiza una validacion para que no muestre los datos que na
-Visualiza el grafico de torta por medio del paquete \code{plotly}
 Muestra un histograma de los edades de los datos cargados
 Muestra un grafico de lineas con el comportamiento de la carga viral plasmatica, celulas CD4 y CD8
 Muestra el resultado de la aplicacion del modelo lineal mixto
-
-permite escoger si sera por la carga viral plasmatica, celulas CD4 y CD8
-y si se aplicara el REML
 Muestra la salida del formula del modelo lineal mixto
 Muestra los residuos encontrados en la formaula del modelo lineal mixto
-
-Primero escoger entre la carga viral plasmatica, celulas CD4 y CD8
-para visualiza mediante una grafica, la visualizacion de los datos
 Graficacion de los residuos del modelo lineal mixto
 Genera el reporte con los datos
-
-Genera el reporte con el mapa, los graficos y los resultados estadisticos expuestos en la aplicacion
+}
+\details{
+Permite crear un evento reactivo con la carga viral, celulas CD4 y CD8 que el usuario desee visualizar
+Dato reactivo selectajusteInput
+Permite crear un evento reactivo con la carga viral, celulas CD4 y CD8 que el usuario desee visualizar
+Dato reactivo \code{selectcargaInput}
+Permite crear un evento reactivo con la carga viral, celulas CD4 y CD8 que el usuario desee visualizar
+Dato reactivo \code{dato}
+Permite crear un evento reactivo con la informacion cargada del archivo
+Dato Reactivo extension
+Muestra la informacion referente al nombre del archivo y la extension
 }
