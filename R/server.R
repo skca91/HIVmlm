@@ -17,6 +17,28 @@ filename = function() {
   paste('reporte', sep = '.', 'docx')
 }
 
+listaVariable <-
+  c("Pac", "Sex", "Genero", "Peri", "Edad", "CD4", "CD8", "CVP")
+
+#' Funcion buscarCabeceras
+#' @description
+#' Permite verificar que los nombres de las variables esten correctos
+buscarCabeceras <- function(archivo) {
+  y <- listaVariable[match(colnames(archivo), listaVariable)]
+  y.sin.na <- y[!is.na(y)]
+  if (length(y.sin.na) < 1) {
+    return(FALSE)
+  } else{
+    if (isTRUE(all.equal.character(y.sin.na, listaVariable))) {
+      return(TRUE)
+    }
+    else{
+      return(FALSE)
+    }
+    
+  }
+  
+}
 
 server <- function(input, output)
 {
@@ -87,13 +109,10 @@ server <- function(input, output)
   
   dato <- reactive({
     file1 <- input$file
-    
     if (is.null(file1)) {
       return()
     }
-    
     read.table(file1$datapath, sep = ",", header = TRUE)
-    
     
   })
   
@@ -147,13 +166,18 @@ server <- function(input, output)
     }
     else{
       if (isFALSE(extension())) {
-        h5("La extension no es la recomendada")
+        h4("La extension no es la recomendada, debe ser una extension .csv")
       } else{
-        tabsetPanel(
-          tabPanel("Acerca del archivo", tableOutput("filedf")),
-          tabPanel("Informacion", dataTableOutput("info")),
-          tabPanel("Resumen", tableOutput("summary"))
-        )
+        if (buscarCabeceras(dato()) == TRUE) {
+          tabsetPanel(
+            tabPanel("Acerca del archivo", tableOutput("filedf")),
+            tabPanel("Informacion", dataTableOutput("info")),
+            tabPanel("Resumen", tableOutput("summary"))
+          )
+        } else{
+          h5("Los nombres de las variables no coinciden")
+        }
+        
       }
       
     }
@@ -163,7 +187,7 @@ server <- function(input, output)
   
   #---------------------------------Visualizacion del mapa
   #' Visualizacion del mapa
-
+  
   output$mapa <- renderUI({
     if (is.null(dato())) {
       h5("No hay ninguna informacion cargada")
@@ -171,8 +195,13 @@ server <- function(input, output)
       if (isFALSE(extension())) {
         h5("La extension no es la recomendada")
       } else{
-        column(12,
-               leafletOutput("mapa1"))
+        if (buscarCabeceras(dato()) == TRUE) {
+          column(12,
+                 leafletOutput("mapa1"))
+        } else{
+          h5("Los nombres de las variables no coinciden")
+        }
+        
       }
     }
     
@@ -180,7 +209,7 @@ server <- function(input, output)
   #' Crea el renderLeaflet para visualizar el mapa
   output$mapa1 <- renderLeaflet({
     idx <- with(info, is.na(info$LNG) == FALSE)
-    tre <- info[idx, ]
+    tre <- info[idx,]
     leaflet(map) %>% addTiles() %>% #addProviderTiles(providers$OpenStreetMap) %>%
       # addPolygons(fill = FALSE, stroke = TRUE, color = "#03F") %>% addLegend("bottomright", colors = "#03F", labels = "Estado Merida")%>%
       addCircleMarkers(
@@ -197,7 +226,7 @@ server <- function(input, output)
   #--------------------------------Visualizacion de los graficos
   
   #' Muestra la visualizacion grafica de la exploracion de datos
- 
+  
   output$grafica <- renderUI({
     if (is.null(dato())) {
       h5("No hay ninguna informacion cargada")
@@ -206,63 +235,68 @@ server <- function(input, output)
       if (isFALSE(extension())) {
         h5("La extension no es la recomendada")
       } else{
-        tabsetPanel(
-          tabPanel("Genero",
-                   sidebarLayout(
-                     sidebarPanel(
-                       selectInput(
-                         "entradas",
-                         "Seleccione El periodo",
-                         choices = c(
-                           "20071",
-                           "20072",
-                           "20081",
-                           "20082",
-                           "20091",
-                           "20092",
-                           "20101",
-                           "20102",
-                           "20111",
-                           "20112",
-                           "20121",
-                           "20122",
-                           "20131",
-                           "20132"
+        if (buscarCabeceras(dato()) == TRUE) {
+          tabsetPanel(
+            tabPanel("Genero",
+                     sidebarLayout(
+                       sidebarPanel(
+                         selectInput(
+                           "entradas",
+                           "Seleccione El periodo",
+                           choices = c(
+                             "20071",
+                             "20072",
+                             "20081",
+                             "20082",
+                             "20091",
+                             "20092",
+                             "20101",
+                             "20102",
+                             "20111",
+                             "20112",
+                             "20121",
+                             "20122",
+                             "20131",
+                             "20132"
+                           )
                          )
-                       )
-                     ),
-                     mainPanel(plotlyOutput("piechart"))
-                   )),
-          
-          
-          
-          tabPanel("Edad",
-                   column(12,
-                          plotlyOutput(
-                            "histogram"
-                          ))),
-          tabPanel("Carga",
-                   sidebarLayout(
-                     sidebarPanel(
-                       selectInput(
-                         "selectcarga",
-                         "Seleccione las Variables",
-                         choices = c("Carga viral plasmatica", "Celulas CD4", "Celulas CD8")
-                       )
-                       
-                     ),
-                     mainPanel(plotlyOutput("line"))
-                   ))
-        )
+                       ),
+                       mainPanel(plotlyOutput("piechart"))
+                     )),
+            
+            
+            
+            tabPanel("Edad",
+                     column(12,
+                            plotlyOutput(
+                              "histogram"
+                            ))),
+            tabPanel("Carga",
+                     sidebarLayout(
+                       sidebarPanel(
+                         selectInput(
+                           "selectcarga",
+                           "Seleccione las Variables",
+                           choices = c("Carga viral plasmatica", "Celulas CD4", "Celulas CD8")
+                         )
+                         
+                       ),
+                       mainPanel(plotlyOutput("line"))
+                     ))
+          )
+        } else{
+          h5("Los nombres de las variables no coinciden")
+        }
+        
       }
     }
   })
   
   #' Muestra un grafico de tortas con el genero
- 
+  
   output$piechart <- renderPlotly({
     idx <- with(dato(), Peri == entradasInput() & is.na(CVP) == FALSE)
-    tre <- dato()[idx,]
+    tre <- dato()[idx, ]
     sexo <- c(tre[, 5])
     tiposex <- rep(NA, length(sexo))
     tiposex[sexo == 0] <- 'Masculino'
@@ -303,7 +337,7 @@ server <- function(input, output)
   #' Muestra un histograma de los edades de los datos cargados
   output$histogram <- renderPlotly({
     idx <- with(dato(), is.na(CVP) == FALSE)
-    tre <- dato()[idx, ]
+    tre <- dato()[idx,]
     plot_ly(alpha = 0.6) %>%
       add_histogram(x = ~ tre$Edad) %>%
       layout(barmode = "overlay") %>%
@@ -339,7 +373,7 @@ server <- function(input, output)
   #----------------------------Ajuste del modelo
   
   #' Muestra el resultado de la aplicacion del modelo lineal mixto
- 
+  
   output$analisis <- renderUI({
     if (is.null(dato())) {
       h5("No hay ninguna informacion cargada")
@@ -348,23 +382,28 @@ server <- function(input, output)
       if (isFALSE(extension())) {
         h5("La extension no es la recomendada")
       } else{
-        sidebarLayout(
-          sidebarPanel(
-            "Modelo de Intercepto Aleatorio con Media Fija",
-            tags$hr(),
-            selectInput(
-              "selectajuste",
-              "Seleccione las Variables",
-              choices = c("Carga viral plasmatica", "Celulas CD4", "Celulas CD8")
+        if (buscarCabeceras(dato()) == TRUE) {
+          sidebarLayout(
+            sidebarPanel(
+              "Modelo de Intercepto Aleatorio con Media Fija",
+              tags$hr(),
+              selectInput(
+                "selectajuste",
+                "Seleccione las Variables",
+                choices = c("Carga viral plasmatica", "Celulas CD4", "Celulas CD8")
+              ),
+              checkboxInput("REML", "Restringida", TRUE)
             ),
-            checkboxInput("REML", "Restringida", TRUE)
-          ),
-          mainPanel(
-            h4("Ajuste de Modelos por Maxima Verosimilitud"),
-            verbatimTextOutput("sum")
-            #tableOutput("ajuste")
+            mainPanel(
+              h4("Ajuste de Modelos por Maxima Verosimilitud"),
+              verbatimTextOutput("sum")
+              #tableOutput("ajuste")
+            )
           )
-        )
+        } else{
+          h5("Los nombres de las variables no coinciden")
+        }
+        
       }
     }
     
@@ -383,7 +422,7 @@ server <- function(input, output)
   
   #-------------------------------Validacion de los datos
   #' Muestra los residuos encontrados en la formaula del modelo lineal mixto
- 
+  
   output$validacion <- renderUI({
     if (is.null(dato())) {
       h5("No hay ninguna informacion cargada")
@@ -392,14 +431,19 @@ server <- function(input, output)
       if (isFALSE(extension())) {
         h5("La extension no es la recomendada")
       } else{
-        sidebarLayout(sidebarPanel(
-          selectInput(
-            "DatosV",
-            "Seleccione las variables:",
-            choices = c("Carga viral plasmatica", "Celulas CD4", "Celulas CD8")
-          )
-        ),
-        mainPanel(plotOutput("valido")))
+        if (buscarCabeceras(dato()) == TRUE) {
+          sidebarLayout(sidebarPanel(
+            selectInput(
+              "DatosV",
+              "Seleccione las variables:",
+              choices = c("Carga viral plasmatica", "Celulas CD4", "Celulas CD8")
+            )
+          ),
+          mainPanel(plotOutput("valido")))
+        } else{
+          h5("Los nombres de las variables no coinciden")
+        }
+        
       }
       
     }
@@ -418,17 +462,22 @@ server <- function(input, output)
   
   #-----------------------------------------------Reportes
   #' Genera el reporte con los datos
- output$reporte <- renderUI({
+  output$reporte <- renderUI({
     if (is.null(dato())) {
       h5("No hay ninguna informacion cargada")
     } else{
       if (isFALSE(extension())) {
         h5("La extension no es la recomendada")
       } else{
-        sidebarLayout(sidebarPanel(
-          downloadButton('downloadReport', label = "Descargar Archivo")
-        ),
-        mainPanel())
+        if (buscarCabeceras(dato()) == TRUE) {
+          sidebarLayout(sidebarPanel(
+            downloadButton('downloadReport', label = "Descargar Archivo")
+          ),
+          mainPanel())
+        } else{
+          h5("Los nombres de las variables no coinciden")
+        }
+        
       }
       
     }
