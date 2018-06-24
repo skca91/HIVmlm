@@ -20,6 +20,28 @@ filename = function() {
 listaVariable <-
   c("Pac", "Sex", "Genero", "Peri", "Edad", "CD4", "CD8", "CVP")
 
+descripcion <- c(
+  "Es el id del paciente",
+  "Es el sexo del paciente",
+  "Es el genero del paciente",
+  "Periodo en el que se trata el paciente",
+  "Edad en ese periodo de tiempo",
+  "Conteo de las celulas CD4",
+  "Conteo de las celulas CD8",
+  "Conteo de la carga viral plasmatica"
+)
+ejemplos <- c(
+  "Es numerico: 1,2,3,4...100",
+  "Es un caracter: f=femenino, m=masculino",
+  "Es numerico: 0 es masculino, 1 es femenino",
+  "Es una cadena de caracteres: 20071, 20132",
+  "Es numerico: 45,29",
+  "Es numerico: 3000,100,375",
+  "Es numerico: 4000,156,543",
+  "Es numerico: 1000,432,20"
+)
+cargaEjemplo <- data.frame(listaVariable, descripcion, ejemplos)
+
 #' Funcion buscarCabeceras
 #' @description
 #' Permite verificar que los nombres de las variables esten correctos
@@ -156,13 +178,17 @@ server <- function(input, output)
     dataset <- dato()
     summary(dataset)
   })
+  
+  output$ejemplo <- renderTable({
+    cargaEjemplo
+  })
   #' Me carga el panel de la informacion del archivo
   #' @description
   #' Cuando la informacion es cargada al sistema, aparece un pequeño panel con las opciones
   #' de acerca del archivo, informacion y resumen de la informacion
   output$tb <- renderUI({
     if (is.null(dato())) {
-      h5("No hay ninguna informacion cargada")
+      tableOutput("ejemplo")
     }
     else{
       if (isFALSE(extension())) {
@@ -209,7 +235,7 @@ server <- function(input, output)
   #' Crea el renderLeaflet para visualizar el mapa
   output$mapa1 <- renderLeaflet({
     idx <- with(info, is.na(info$LNG) == FALSE)
-    tre <- info[idx,]
+    tre <- info[idx, ]
     leaflet(map) %>% addTiles() %>% #addProviderTiles(providers$OpenStreetMap) %>%
       # addPolygons(fill = FALSE, stroke = TRUE, color = "#03F") %>% addLegend("bottomright", colors = "#03F", labels = "Estado Merida")%>%
       addCircleMarkers(
@@ -296,7 +322,7 @@ server <- function(input, output)
   
   output$piechart <- renderPlotly({
     idx <- with(dato(), Peri == entradasInput() & is.na(CVP) == FALSE)
-    tre <- dato()[idx, ]
+    tre <- dato()[idx,]
     sexo <- c(tre[, 5])
     tiposex <- rep(NA, length(sexo))
     tiposex[sexo == 0] <- 'Masculino'
@@ -337,7 +363,7 @@ server <- function(input, output)
   #' Muestra un histograma de los edades de los datos cargados
   output$histogram <- renderPlotly({
     idx <- with(dato(), is.na(CVP) == FALSE)
-    tre <- dato()[idx,]
+    tre <- dato()[idx, ]
     plot_ly(alpha = 0.6) %>%
       add_histogram(x = ~ tre$Edad) %>%
       layout(barmode = "overlay") %>%

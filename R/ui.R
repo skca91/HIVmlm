@@ -1,5 +1,6 @@
 
 
+
 ui <- fluidPage(# App title ----
                 
                 titlePanel("HIVmlm"),
@@ -19,6 +20,10 @@ ui <- fluidPage(# App title ----
                           "file",
                           label = h3("Carga de Archivo"),
                           placeholder = "Ningun archivo seleccionado"
+                        ),
+                        tags$hr(),
+                        h4(
+                          "Antes de cargar la informacion, los nombres de las variables a cargar en el archivo deben coincidir con las mostradas en la tabla"
                         ),
                         tags$hr(),
                         h5(helpText("Debe subir un archivo con extension .csv"))
