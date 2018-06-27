@@ -20,7 +20,15 @@ filename = function() {
 
 
 listaVariable <-
-   c("Id","Edad","Sex","Genero","Periodo","CD4","CD8","CVP","Municipio")
+  c("Id",
+    "Edad",
+    "Sex",
+    "Genero",
+    "Periodo",
+    "CD4",
+    "CD8",
+    "CVP",
+    "Municipio")
 
 descripcion <- c(
   "Es el id del paciente",
@@ -189,12 +197,13 @@ server <- function(input, output)
   })
   output$municipios <- renderDataTable({
     idx <-  with(info, info$ID_1 == 15)
-    tre <- info[idx, ]
+    tre <- info[idx,]
     IdEstado <- tre$ID_1
     NombreEstado <- tre$NAME_1
     IdMunicipio <- tre$ID_2
     NombreMunicipio <- tre$NAME_2
-    mun <- data.frame(IdEstado, NombreEstado , IdMunicipio, NombreMunicipio)
+    mun <-
+      data.frame(IdEstado, NombreEstado , IdMunicipio, NombreMunicipio)
     mun
   })
   #' Me carga el panel de la informacion del archivo
@@ -204,9 +213,12 @@ server <- function(input, output)
   output$tb <- renderUI({
     if (is.null(dato())) {
       tabsetPanel(
-        tabPanel("Acerca de la carga del archivo",tableOutput("ejemplo")),
-        tabPanel("Acerca de los municipios y estados de Venezuela", dataTableOutput("municipios"))
+        tabPanel("Acerca de la carga del archivo", tableOutput("ejemplo")),
+        tabPanel(
+          "Acerca de los municipios y estados de Venezuela",
+          dataTableOutput("municipios")
         )
+      )
     }
     else{
       if (isFALSE(extension())) {
@@ -253,13 +265,13 @@ server <- function(input, output)
   #' Crea el renderLeaflet para visualizar el mapa
   output$mapa1 <- renderLeaflet({
     idx <-  which(info$ID_2 %in%  dato()$Municipio)
-    tre <- info[idx, ]
-    ggg <-  group_by(dato(),dato()$Id)
+    tre <- info[idx,]
+    ggg <-  group_by(dato(), dato()$Id)
     mun <- group_by(ggg, Municipio)
-    summarise(mun,mean(CD4,na.rm=TRUE), mean(CVP,na.rm=TRUE)) #Media CD4 y CVP
-    summarise(mun,mean(Genero==0)*100, mean(Genero==1)*100) #Genero
-    summarise(mun,sd(CD4,na.rm=TRUE), sd(CVP,na.rm=TRUE)) #Desviacion estandar
-    Num <-table(mun$Municipio)/14
+    summarise(mun, mean(CD4, na.rm = TRUE), mean(CVP, na.rm = TRUE)) #Media CD4 y CVP
+    summarise(mun, mean(Genero == 0) * 100, mean(Genero == 1) * 100) #Genero
+    summarise(mun, sd(CD4, na.rm = TRUE), sd(CVP, na.rm = TRUE)) #Desviacion estandar
+    Num <- table(mun$Municipio) / 14
     leaflet(map) %>% addTiles() %>% #addProviderTiles(providers$OpenStreetMap) %>%
       # addPolygons(fill = FALSE, stroke = TRUE, color = "#03F") %>% addLegend("bottomright", colors = "#03F", labels = "Estado Merida")%>%
       addCircleMarkers(
@@ -269,8 +281,12 @@ server <- function(input, output)
         color = c("blue"),
         fillOpacity = 0.3,
         stroke = FALSE,
-        popup = paste("<Strong>Municipio </Strong> ",tre$NAME_2,
-                      "</br>Numero de Personas: ",Num)
+        popup = paste(
+          "<Strong>Municipio </Strong> ",
+          tre$NAME_2,
+          "</br>Numero de Personas: ",
+          Num
+        )
       )
   })
   
@@ -346,8 +362,9 @@ server <- function(input, output)
   #' Muestra un grafico de tortas con el genero
   
   output$piechart <- renderPlotly({
-    idx <- with(dato(), Periodo == entradasInput() & is.na(CVP) == FALSE)
-    tre <- dato()[idx,]
+    idx <-
+      with(dato(), Periodo == entradasInput() & is.na(CVP) == FALSE)
+    tre <- dato()[idx, ]
     sexo <- c(tre[, 5])
     tiposex <- rep(NA, length(sexo))
     tiposex[sexo == 0] <- 'Masculino'
@@ -386,7 +403,6 @@ server <- function(input, output)
   })
   #' Muestra un histograma de los edades de los datos cargados
   output$histogram <- renderPlotly({
-    
     plot_ly(alpha = 0.6) %>%
       add_histogram(x = ~ dato()$Edad) %>%
       layout(barmode = "overlay") %>%
@@ -460,7 +476,6 @@ server <- function(input, output)
   
   #' Muestra la salida del formula del modelo lineal mixto
   output$sum <- renderPrint({
-    
     LOGCVP <- log(dato()$CVP)
     variable <-  selectajusteInput()
     M0 <-
@@ -504,7 +519,7 @@ server <- function(input, output)
     variable <- datosVInput()
     M1RML <-
       lmer(variable ~ 1 + Fecha  + Edad  + (Fecha |
-                                                  Id),
+                                              Id),
            data = dato(),
            REML = FALSE)
     qqmath (M1RML, id = 0.05)

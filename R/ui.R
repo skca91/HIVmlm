@@ -5,7 +5,7 @@ ui <- fluidPage(# App title ----
                 
                 titlePanel("HIVmlm"),
                 fluidRow(
-                 # shinythemes::themeSelector(),
+                  # shinythemes::themeSelector(),
                   navbarPage(
                     theme = shinytheme("flatly"),
                     img(
