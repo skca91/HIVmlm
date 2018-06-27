@@ -75,7 +75,7 @@ xlab("Periodo") + ylab("Variable")
 
 ```{r echo=FALSE, warning=FALSE}
 variable <- params$ajuste
-LOGCVP <- log(CVP)
+LOGCVP <- log(dato()$CVP)
 M0 <-
 lmer(LOGCVP ~ 1 + Fecha +  variable + (1 |
 Id),

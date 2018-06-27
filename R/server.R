@@ -197,7 +197,7 @@ server <- function(input, output)
   })
   output$municipios <- renderDataTable({
     idx <-  with(info, info$ID_1 == 15)
-    tre <- info[idx,]
+    tre <- info[idx, ]
     IdEstado <- tre$ID_1
     NombreEstado <- tre$NAME_1
     IdMunicipio <- tre$ID_2
@@ -265,7 +265,7 @@ server <- function(input, output)
   #' Crea el renderLeaflet para visualizar el mapa
   output$mapa1 <- renderLeaflet({
     idx <-  which(info$ID_2 %in%  dato()$Municipio)
-    tre <- info[idx,]
+    tre <- info[idx, ]
     ggg <-  group_by(dato(), dato()$Id)
     mun <- group_by(ggg, Municipio)
     summarise(mun, mean(CD4, na.rm = TRUE), mean(CVP, na.rm = TRUE)) #Media CD4 y CVP
@@ -364,7 +364,7 @@ server <- function(input, output)
   output$piechart <- renderPlotly({
     idx <-
       with(dato(), Periodo == entradasInput() & is.na(CVP) == FALSE)
-    tre <- dato()[idx, ]
+    tre <- dato()[idx,]
     sexo <- c(tre[, 5])
     tiposex <- rep(NA, length(sexo))
     tiposex[sexo == 0] <- 'Masculino'
