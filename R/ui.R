@@ -1,11 +1,13 @@
-
+library(shinythemes)
 
 
 ui <- fluidPage(# App title ----
                 
                 titlePanel("HIVmlm"),
                 fluidRow(
+                 # shinythemes::themeSelector(),
                   navbarPage(
+                    theme = shinytheme("flatly"),
                     img(
                       src = "lacito_rojo.png",
                       alt = "HIV",

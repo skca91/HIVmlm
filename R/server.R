@@ -17,18 +17,21 @@ filename = function() {
   paste('reporte', sep = '.', 'docx')
 }
 
+
+
 listaVariable <-
-  c("Pac", "Sex", "Genero", "Peri", "Edad", "CD4", "CD8", "CVP")
+   c("Id","Edad","Sex","Genero","Periodo","CD4","CD8","CVP","Municipio")
 
 descripcion <- c(
   "Es el id del paciente",
+  "Edad en ese periodo de tiempo",
   "Es el sexo del paciente",
   "Es el genero del paciente",
   "Periodo en el que se trata el paciente",
-  "Edad en ese periodo de tiempo",
   "Conteo de las celulas CD4",
   "Conteo de las celulas CD8",
-  "Conteo de la carga viral plasmatica"
+  "Conteo de la carga viral plasmatica",
+  "Es el id del municipio"
 )
 ejemplos <- c(
   "Es numerico: 1,2,3,4...100",
@@ -38,7 +41,8 @@ ejemplos <- c(
   "Es numerico: 45,29",
   "Es numerico: 3000,100,375",
   "Es numerico: 4000,156,543",
-  "Es numerico: 1000,432,20"
+  "Es numerico: 1000,432,20",
+  "157 ->Municipio Alberto Adriani Estado Merida"
 )
 cargaEjemplo <- data.frame(listaVariable, descripcion, ejemplos)
 
@@ -51,7 +55,7 @@ buscarCabeceras <- function(archivo) {
   if (length(y.sin.na) < 1) {
     return(FALSE)
   } else{
-    if (isTRUE(all.equal.character(y.sin.na, listaVariable))) {
+    if (isTRUE(all.equal(y.sin.na, listaVariable))) {
       return(TRUE)
     }
     else{
@@ -138,6 +142,7 @@ server <- function(input, output)
     
   })
   
+  
   #' Dato Reactivo extension
   extension <- reactive({
     file1 <- input$file
@@ -182,13 +187,26 @@ server <- function(input, output)
   output$ejemplo <- renderTable({
     cargaEjemplo
   })
+  output$municipios <- renderDataTable({
+    idx <-  with(info, info$ID_1 == 15)
+    tre <- info[idx, ]
+    IdEstado <- tre$ID_1
+    NombreEstado <- tre$NAME_1
+    IdMunicipio <- tre$ID_2
+    NombreMunicipio <- tre$NAME_2
+    mun <- data.frame(IdEstado, NombreEstado , IdMunicipio, NombreMunicipio)
+    mun
+  })
   #' Me carga el panel de la informacion del archivo
   #' @description
   #' Cuando la informacion es cargada al sistema, aparece un pequeño panel con las opciones
   #' de acerca del archivo, informacion y resumen de la informacion
   output$tb <- renderUI({
     if (is.null(dato())) {
-      tableOutput("ejemplo")
+      tabsetPanel(
+        tabPanel("Acerca de la carga del archivo",tableOutput("ejemplo")),
+        tabPanel("Acerca de los municipios y estados de Venezuela", dataTableOutput("municipios"))
+        )
     }
     else{
       if (isFALSE(extension())) {
@@ -234,8 +252,14 @@ server <- function(input, output)
   })
   #' Crea el renderLeaflet para visualizar el mapa
   output$mapa1 <- renderLeaflet({
-    idx <- with(info, is.na(info$LNG) == FALSE)
+    idx <-  which(info$ID_2 %in%  dato()$Municipio)
     tre <- info[idx, ]
+    ggg <-  group_by(dato(),dato()$Id)
+    mun <- group_by(ggg, Municipio)
+    summarise(mun,mean(CD4,na.rm=TRUE), mean(CVP,na.rm=TRUE)) #Media CD4 y CVP
+    summarise(mun,mean(Genero==0)*100, mean(Genero==1)*100) #Genero
+    summarise(mun,sd(CD4,na.rm=TRUE), sd(CVP,na.rm=TRUE)) #Desviacion estandar
+    Num <-table(mun$Municipio)/14
     leaflet(map) %>% addTiles() %>% #addProviderTiles(providers$OpenStreetMap) %>%
       # addPolygons(fill = FALSE, stroke = TRUE, color = "#03F") %>% addLegend("bottomright", colors = "#03F", labels = "Estado Merida")%>%
       addCircleMarkers(
@@ -245,7 +269,8 @@ server <- function(input, output)
         color = c("blue"),
         fillOpacity = 0.3,
         stroke = FALSE,
-        popup = tre$NAME_2
+        popup = paste("<Strong>Municipio </Strong> ",tre$NAME_2,
+                      "</br>Numero de Personas: ",Num)
       )
   })
   
@@ -321,7 +346,7 @@ server <- function(input, output)
   #' Muestra un grafico de tortas con el genero
   
   output$piechart <- renderPlotly({
-    idx <- with(dato(), Peri == entradasInput() & is.na(CVP) == FALSE)
+    idx <- with(dato(), Periodo == entradasInput() & is.na(CVP) == FALSE)
     tre <- dato()[idx,]
     sexo <- c(tre[, 5])
     tiposex <- rep(NA, length(sexo))
@@ -358,14 +383,12 @@ server <- function(input, output)
       )
     
     
-    
   })
   #' Muestra un histograma de los edades de los datos cargados
   output$histogram <- renderPlotly({
-    idx <- with(dato(), is.na(CVP) == FALSE)
-    tre <- dato()[idx, ]
+    
     plot_ly(alpha = 0.6) %>%
-      add_histogram(x = ~ tre$Edad) %>%
+      add_histogram(x = ~ dato()$Edad) %>%
       layout(barmode = "overlay") %>%
       layout(
         title = 'Frecuencia de edades',
@@ -380,18 +403,18 @@ server <- function(input, output)
     variable <- selectcargaInput()
     plot_ly(
       dato(),
-      x = ~ as.character.Date(Peri),
+      x = ~ as.character.Date(Periodo),
       y = ~ variable,
       type = "scatter",
-      text = paste("Paciente: ", dato()$Pac, "</br>Genero: ", dato()$Sex),
+      text = paste("Paciente: ", dato()$Id, "</br>Genero: ", dato()$Sex),
       mode = "markers",
       colors = "Set1"
     ) %>%
       layout(
         title = 'Comportamiento del conteo por semestre',
-        yaxis = list(zeroline = FALSE, title = "Variable"),
+        yaxis = list(zeroline = FALSE, title = 'Variable'),
         xaxis = list(zeroline = FALSE),
-        title = "Periodo"
+        title = 'Periodo'
       )
     
   })
@@ -437,10 +460,12 @@ server <- function(input, output)
   
   #' Muestra la salida del formula del modelo lineal mixto
   output$sum <- renderPrint({
+    
+    LOGCVP <- log(dato()$CVP)
     variable <-  selectajusteInput()
     M0 <-
-      lmer(LogCVP ~ 1 + Fecha +  variable + (1 |
-                                               Pac),
+      lmer(LOGCVP ~ 1 + Fecha +  variable + (1 |
+                                               Id),
            data = dato(),
            REML = input$REML)
     summary(M0)
@@ -478,8 +503,8 @@ server <- function(input, output)
   output$valido <- renderPlot({
     variable <- datosVInput()
     M1RML <-
-      lmer(variable ~ 1 + Fecha  + Edad + EI + (Fecha |
-                                                  Pac),
+      lmer(variable ~ 1 + Fecha  + Edad  + (Fecha |
+                                                  Id),
            data = dato(),
            REML = FALSE)
     qqmath (M1RML, id = 0.05)
