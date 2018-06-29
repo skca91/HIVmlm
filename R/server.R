@@ -197,7 +197,7 @@ server <- function(input, output)
   })
   output$municipios <- renderDataTable({
     idx <-  with(info, info$ID_1 == 15)
-    tre <- info[idx,]
+    tre <- info[idx, ]
     IdEstado <- tre$ID_1
     NombreEstado <- tre$NAME_1
     IdMunicipio <- tre$ID_2
@@ -265,7 +265,7 @@ server <- function(input, output)
   #' Crea el renderLeaflet para visualizar el mapa
   output$mapa1 <- renderLeaflet({
     idx <-  which(info$ID_2 %in%  dato()$Municipio)
-    tre <- info[idx,]
+    tre <- info[idx, ]
     
     ggg <-  group_by(dato(), Id)
     mun <- group_by(ggg, Municipio)
@@ -277,7 +277,7 @@ server <- function(input, output)
     desviacion <-
       summarise(mun, sd(CD4, na.rm = TRUE), sd(CVP, na.rm = TRUE)) #Desviacion estandar
     Num <- table(mun$Municipio) / 14
-    Rango <- 20-6
+    Rango <- 20 - 6
     max <- max(Num)
     
     tre <- data.frame(tre, cd4$`mean(CD4, na.rm = TRUE)`)
@@ -295,7 +295,7 @@ server <- function(input, output)
       addCircleMarkers(
         lng = tre$LNG,
         lat = tre$LAT,
-        radius = ((Num/max)*Rango)+6,
+        radius = ((Num / max) * Rango) + 6,
         color = c("purple"),
         fillOpacity = 0.6,
         stroke = FALSE,
@@ -395,7 +395,7 @@ server <- function(input, output)
   output$piechart <- renderPlotly({
     idx <-
       with(dato(), Periodo == entradasInput() & is.na(CVP) == FALSE)
-    tre <- dato()[idx, ]
+    tre <- dato()[idx,]
     sexo <- c(tre[, 5])
     tiposex <- rep(NA, length(sexo))
     tiposex[sexo == 0] <- 'Masculino'
