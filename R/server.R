@@ -197,7 +197,7 @@ server <- function(input, output)
   })
   output$municipios <- renderDataTable({
     idx <-  with(info, info$ID_1 == 15)
-    tre <- info[idx, ]
+    tre <- info[idx,]
     IdEstado <- tre$ID_1
     NombreEstado <- tre$NAME_1
     IdMunicipio <- tre$ID_2
@@ -215,7 +215,7 @@ server <- function(input, output)
       tabsetPanel(
         tabPanel("Acerca de la carga del archivo", tableOutput("ejemplo")),
         tabPanel(
-          "Acerca de los municipios y estados de Venezuela",
+          "Acerca de los municipios del Estado Merida",
           dataTableOutput("municipios")
         )
       )
@@ -265,13 +265,28 @@ server <- function(input, output)
   #' Crea el renderLeaflet para visualizar el mapa
   output$mapa1 <- renderLeaflet({
     idx <-  which(info$ID_2 %in%  dato()$Municipio)
-    tre <- info[idx, ]
-    ggg <-  group_by(dato(), dato()$Id)
+    tre <- info[idx,]
+    
+    ggg <-  group_by(dato(), Id)
     mun <- group_by(ggg, Municipio)
-    summarise(mun, mean(CD4, na.rm = TRUE), mean(CVP, na.rm = TRUE)) #Media CD4 y CVP
-    summarise(mun, mean(Genero == 0) * 100, mean(Genero == 1) * 100) #Genero
-    summarise(mun, sd(CD4, na.rm = TRUE), sd(CVP, na.rm = TRUE)) #Desviacion estandar
+    cd4 <- summarise(mun, mean(CD4, na.rm = TRUE))
+    cvp <- summarise(mun, mean(CVP, na.rm = TRUE))
+    
+    genero <-
+      summarise(mun, mean(Genero == 0) * 100, mean(Genero == 1) * 100) #Genero
+    desviacion <-
+      summarise(mun, sd(CD4, na.rm = TRUE), sd(CVP, na.rm = TRUE)) #Desviacion estandar
     Num <- table(mun$Municipio) / 14
+    tre <- data.frame(tre, cd4$`mean(CD4, na.rm = TRUE)`)
+    tre <- data.frame(tre, cvp$`mean(CVP, na.rm = TRUE)`)
+    tre <-
+      data.frame(tre,
+                 genero$`mean(Genero == 0) * 100`,
+                 genero$`mean(Genero == 1) * 100`)
+    tre <-
+      data.frame(tre,
+                 desviacion$`sd(CD4, na.rm = TRUE)`,
+                 desviacion$`sd(CVP, na.rm = TRUE)`)
     leaflet(map) %>% addTiles() %>% #addProviderTiles(providers$OpenStreetMap) %>%
       # addPolygons(fill = FALSE, stroke = TRUE, color = "#03F") %>% addLegend("bottomright", colors = "#03F", labels = "Estado Merida")%>%
       addCircleMarkers(
@@ -284,8 +299,21 @@ server <- function(input, output)
         popup = paste(
           "<Strong>Municipio </Strong> ",
           tre$NAME_2,
+          "</br>",
           "</br>Numero de Personas: ",
-          Num
+          Num,
+          "</br>Porcentaje de Hombres: ",
+          tre$genero..mean.Genero....0....100.,
+          "</br>Porcentaje de Mujeres: ",
+          tre$genero..mean.Genero....1....100.,
+          "</br>Media de Celulas CD4: ",
+          tre$cd4..mean.CD4..na.rm...TRUE..,
+          "</br>Media de Carga viral plasmatica: ",
+          tre$cvp..mean.CVP..na.rm...TRUE..,
+          "</br>Desviacion estandar de Celulas CD4: ",
+          tre$desviacion..sd.CD4..na.rm...TRUE..,
+          "</br>Desviacion estandar de Carga viral plasmatica: ",
+          tre$desviacion..sd.CVP..na.rm...TRUE..
         )
       )
   })
@@ -364,7 +392,7 @@ server <- function(input, output)
   output$piechart <- renderPlotly({
     idx <-
       with(dato(), Periodo == entradasInput() & is.na(CVP) == FALSE)
-    tre <- dato()[idx,]
+    tre <- dato()[idx, ]
     sexo <- c(tre[, 5])
     tiposex <- rep(NA, length(sexo))
     tiposex[sexo == 0] <- 'Masculino'
