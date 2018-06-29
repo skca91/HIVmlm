@@ -277,6 +277,9 @@ server <- function(input, output)
     desviacion <-
       summarise(mun, sd(CD4, na.rm = TRUE), sd(CVP, na.rm = TRUE)) #Desviacion estandar
     Num <- table(mun$Municipio) / 14
+    Rango <- 20-6
+    max <- max(Num)
+    
     tre <- data.frame(tre, cd4$`mean(CD4, na.rm = TRUE)`)
     tre <- data.frame(tre, cvp$`mean(CVP, na.rm = TRUE)`)
     tre <-
@@ -292,9 +295,9 @@ server <- function(input, output)
       addCircleMarkers(
         lng = tre$LNG,
         lat = tre$LAT,
-        radius = 10,
-        color = c("blue"),
-        fillOpacity = 0.3,
+        radius = ((Num/max)*Rango)+6,
+        color = c("purple"),
+        fillOpacity = 0.6,
         stroke = FALSE,
         popup = paste(
           "<Strong>Municipio </Strong> ",
