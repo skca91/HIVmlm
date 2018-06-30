@@ -369,7 +369,7 @@ server <- function(input, output)
                             plotlyOutput(
                               "histogram"
                             ))),
-            tabPanel("Carga",
+            tabPanel("Marcadores",
                      sidebarLayout(
                        sidebarPanel(
                          selectInput(
